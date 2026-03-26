@@ -61,7 +61,7 @@ public class ReviewServiceImpl implements ReviewService {
                 "Reviewer not found with id: " + reviewerId
             ));
 
-        ReviewCycle cycle = reviewCycleRepository.findById(cycleId)
+        ReviewCycle cycle = reviewCycleRepository.findByIdForUpdate(cycleId)
             .orElseThrow(() -> new ResourceNotFoundException(
                 "Review cycle not found with id: " + cycleId
             ));
@@ -96,16 +96,16 @@ public class ReviewServiceImpl implements ReviewService {
         cycle.addRating(savedReview.getRating());
         reviewCycleRepository.save(cycle);
 
-        updateEmployeeCycleStats(employee, cycle, savedReview.getRating());
+        updateEmployeeCycleStatsWithLock(employee, cycle, savedReview.getRating());
 
         log.info("Review submitted successfully — reviewId: {}", savedReview.getId());
 
         return TrackerMapper.toReviewResponse(savedReview);
     }
 
-    private void updateEmployeeCycleStats(Employee employee, ReviewCycle cycle, Integer rating) {
+    private void updateEmployeeCycleStatsWithLock(Employee employee, ReviewCycle cycle, Short rating) {
         EmployeeCycleStats stats = employeeCycleStatsRepository
-            .findByIdEmployeeIdAndIdCycleId(employee.getId(), cycle.getId())
+            .findByEmployeeIdAndCycleIdForUpdate(employee.getId(), cycle.getId())
             .orElseGet(() -> EmployeeCycleStats.builder()
                 .id(new EmployeeCycleStats.EmployeeCycleStatsId(employee.getId(), cycle.getId()))
                 .employee(employee)

@@ -4,6 +4,9 @@ import com.hivel.tracker.entity.EmployeeCycleStats;
 import com.hivel.tracker.entity.EmployeeCycleStats.EmployeeCycleStatsId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import jakarta.persistence.LockModeType;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,24 +29,16 @@ public interface EmployeeCycleStatsRepository
     """)
     List<EmployeeCycleStats> findTopPerformersByCycle(UUID cycleId);
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
-        SELECT AVG(ecs.avgRating)
-        FROM EmployeeCycleStats ecs
-        WHERE ecs.cycle.id = :cycleId
-    """)
-    Double findAverageRatingForCycle(UUID cycleId);
+    SELECT ecs
+    FROM EmployeeCycleStats ecs
+    WHERE ecs.id.employeeId = :employeeId
+      AND ecs.id.cycleId = :cycleId
+""")
+    Optional<EmployeeCycleStats> findByEmployeeIdAndCycleIdForUpdate(
+            @Param("employeeId") UUID employeeId,
+            @Param("cycleId") UUID cycleId
+    );
 
-    @Query("""
-        SELECT COALESCE(SUM(ecs.goalsCompleted), 0)
-        FROM EmployeeCycleStats ecs
-        WHERE ecs.cycle.id = :cycleId
-    """)
-    Integer sumGoalsCompletedByCycle(UUID cycleId);
-
-    @Query("""
-        SELECT COALESCE(SUM(ecs.goalsMissed), 0)
-        FROM EmployeeCycleStats ecs
-        WHERE ecs.cycle.id = :cycleId
-    """)
-    Integer sumGoalsMissedByCycle(UUID cycleId);
 }

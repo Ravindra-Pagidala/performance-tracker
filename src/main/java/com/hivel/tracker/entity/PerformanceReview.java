@@ -75,7 +75,7 @@ public class PerformanceReview {
         nullable = false,
         columnDefinition = "SMALLINT"
     )
-    private Integer rating;
+    private Short rating;
 
     @Column(name = "notes", columnDefinition = "TEXT")
     private String notes;

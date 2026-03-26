@@ -1,5 +1,6 @@
 package com.hivel.tracker.dto.request;
 
+import com.hivel.tracker.enums.GoalStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,11 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SubmitReviewRequest {
+public class UpdateGoalStatusRequest {
 
-    private String employeeId;
-    private String cycleId;
-    private String reviewerId;
-    private Short rating;
-    private String notes;
+    private GoalStatus status;
 }

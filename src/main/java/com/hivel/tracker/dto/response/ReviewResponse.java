@@ -21,7 +21,7 @@ public class ReviewResponse {
     private String cycleName;
     private UUID reviewerId;
     private String reviewerName;
-    private Integer rating;
+    private Short rating;
     private String notes;
     private OffsetDateTime submittedAt;
 }

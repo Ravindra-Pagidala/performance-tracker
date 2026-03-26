@@ -37,7 +37,7 @@ public final class ValidationUtils {
         }
     }
 
-    public static void requireValidRating(Integer rating) {
+    public static void requireValidRating(Short rating) {
         if (rating == null) {
             log.warn("Validation failed — rating is null");
             throw new BusinessValidationException("Rating must not be null");

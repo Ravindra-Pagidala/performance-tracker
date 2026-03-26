@@ -1,10 +1,7 @@
 package com.hivel.tracker.dto.mapper;
 
 import com.hivel.tracker.dto.response.*;
-import com.hivel.tracker.entity.Employee;
-import com.hivel.tracker.entity.EmployeeCycleStats;
-import com.hivel.tracker.entity.PerformanceReview;
-import com.hivel.tracker.entity.ReviewCycle;
+import com.hivel.tracker.entity.*;
 
 public final class TrackerMapper {
 
@@ -55,17 +52,18 @@ public final class TrackerMapper {
             .build();
     }
 
-    public static EmployeeFilterResponse toEmployeeFilterResponse(
-        Employee employee,
-        Double averageRating
-    ) {
+    public static EmployeeFilterResponse toEmployeeFilterResponse(EmployeeFilterProjection projection) {
         return EmployeeFilterResponse.builder()
-            .employeeId(employee.getId())
-            .employeeName(employee.getName())
-            .department(employee.getDepartment())
-            .role(employee.getRole())
-            .averageRating(averageRating)
-            .build();
+                .employeeId(projection.getEmployeeId())
+                .employeeName(projection.getName())
+                .department(projection.getDepartment())
+                .role(projection.getRole())
+                .averageRating(
+                        projection.getAverageRating() != null
+                                ? Math.round(projection.getAverageRating().doubleValue() * 100.0) / 100.0
+                                : 0.0
+                )
+                .build();
     }
 
     public static CycleSummaryResponse toCycleSummaryResponse(
@@ -91,6 +89,18 @@ public final class TrackerMapper {
             .completedGoals(completedGoals != null ? completedGoals : 0)
             .missedGoals(missedGoals != null ? missedGoals : 0)
             .build();
+    }
+
+    public static GoalResponse toGoalResponse(Goal goal) {
+        return GoalResponse.builder()
+                .goalId(goal.getId())
+                .employeeId(goal.getEmployee().getId())
+                .employeeName(goal.getEmployee().getName())
+                .cycleId(goal.getCycle().getId())
+                .cycleName(goal.getCycle().getName())
+                .title(goal.getTitle())
+                .status(goal.getStatus())
+                .build();
     }
 
     private static double round(Double value) {

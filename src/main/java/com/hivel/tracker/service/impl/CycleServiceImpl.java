@@ -4,8 +4,10 @@ import com.hivel.tracker.dto.mapper.TrackerMapper;
 import com.hivel.tracker.dto.response.CycleSummaryResponse;
 import com.hivel.tracker.entity.EmployeeCycleStats;
 import com.hivel.tracker.entity.ReviewCycle;
+import com.hivel.tracker.enums.GoalStatus;
 import com.hivel.tracker.exception.ResourceNotFoundException;
 import com.hivel.tracker.repository.EmployeeCycleStatsRepository;
+import com.hivel.tracker.repository.GoalRepository;
 import com.hivel.tracker.repository.ReviewCycleRepository;
 import com.hivel.tracker.service.CycleService;
 import com.hivel.tracker.utils.ValidationUtils;
@@ -27,6 +29,7 @@ public class CycleServiceImpl implements CycleService {
 
     private final ReviewCycleRepository reviewCycleRepository;
     private final EmployeeCycleStatsRepository employeeCycleStatsRepository;
+    private final GoalRepository goalRepository;
 
     @Override
     public CycleSummaryResponse getCycleSummary(UUID cycleId) {
@@ -35,26 +38,31 @@ public class CycleServiceImpl implements CycleService {
         ValidationUtils.requireNonNull(cycleId, "cycleId");
 
         ReviewCycle cycle = reviewCycleRepository.findById(cycleId)
-            .orElseThrow(() -> new ResourceNotFoundException(
-                "Review cycle not found with id: " + cycleId
-            ));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Review cycle not found with id: " + cycleId
+                ));
 
-        Double averageRating = employeeCycleStatsRepository.findAverageRatingForCycle(cycleId);
+        Double averageRating = cycle.getAverageRating();
 
         List<EmployeeCycleStats> topPerformers =
-            employeeCycleStatsRepository.findTopPerformersByCycle(cycleId);
+                employeeCycleStatsRepository.findTopPerformersByCycle(cycleId);
 
         EmployeeCycleStats topPerformer = topPerformers.isEmpty() ? null : topPerformers.get(0);
 
-        Integer completedGoals = employeeCycleStatsRepository.sumGoalsCompletedByCycle(cycleId);
-        Integer missedGoals = employeeCycleStatsRepository.sumGoalsMissedByCycle(cycleId);
+        Integer completedGoals = Math.toIntExact(
+                goalRepository.countByCycleIdAndStatus(cycleId, GoalStatus.COMPLETED)
+        );
+
+        Integer missedGoals = Math.toIntExact(
+                goalRepository.countByCycleIdAndStatus(cycleId, GoalStatus.MISSED)
+        );
 
         return TrackerMapper.toCycleSummaryResponse(
-            cycle,
-            averageRating,
-            topPerformer,
-            completedGoals,
-            missedGoals
+                cycle,
+                averageRating,
+                topPerformer,
+                completedGoals,
+                missedGoals
         );
     }
 }

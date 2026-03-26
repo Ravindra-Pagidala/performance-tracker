@@ -5,15 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SubmitReviewRequest {
+public class CreateGoalRequest {
 
-    private String employeeId;
-    private String cycleId;
-    private String reviewerId;
-    private Short rating;
-    private String notes;
+    private UUID employeeId;
+    private UUID cycleId;
+    private String title;
 }

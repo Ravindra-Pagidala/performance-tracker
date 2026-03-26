@@ -70,18 +70,6 @@ public class EmployeeCycleStats {
     @Builder.Default
     private Integer reviewCount = 0;
 
-    @Column(name = "goals_completed", nullable = false)
-    @Builder.Default
-    private Integer goalsCompleted = 0;
-
-    @Column(name = "goals_missed", nullable = false)
-    @Builder.Default
-    private Integer goalsMissed = 0;
-
-    @Column(name = "goals_pending", nullable = false)
-    @Builder.Default
-    private Integer goalsPending = 0;
-
     @Column(name = "last_updated", nullable = false)
     private OffsetDateTime lastUpdated;
 

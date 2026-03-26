@@ -2,6 +2,7 @@ package com.hivel.tracker.service.impl;
 
 import com.hivel.tracker.dto.mapper.TrackerMapper;
 import com.hivel.tracker.dto.request.CreateEmployeeRequest;
+import com.hivel.tracker.dto.response.EmployeeFilterProjection;
 import com.hivel.tracker.dto.response.EmployeeFilterResponse;
 import com.hivel.tracker.dto.response.EmployeeResponse;
 import com.hivel.tracker.dto.response.EmployeeReviewDetailsResponse;
@@ -92,28 +93,19 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         if (minRating < 0 || minRating > 5) {
             throw new BusinessValidationException(
-                "minRating must be between 0 and 5, received: " + minRating
+                    "minRating must be between 0 and 5, received: " + minRating
             );
         }
 
-        List<Employee> employees = employeeRepository.findEmployeesByDepartmentAndMinRating(
-            department.trim(),
-            BigDecimal.valueOf(minRating)
-        );
-
-        return employees.stream()
-            .map(employee -> {
-                Double avg = performanceReviewRepository.findAverageRatingForEmployee(employee.getId());
-                return TrackerMapper.toEmployeeFilterResponse(
-                    employee,
-                    avg != null ? round(avg) : 0.0
+        List<EmployeeFilterProjection> results =
+                employeeRepository.findEmployeesByDepartmentAndMinRating(
+                        department.trim(),
+                        minRating
                 );
-            })
-            .sorted(Comparator.comparing(EmployeeFilterResponse::getAverageRating).reversed())
-            .toList();
+
+        return results.stream()
+                .map(TrackerMapper::toEmployeeFilterResponse)
+                .toList();
     }
 
-    private double round(Double value) {
-        return Math.round(value * 100.0) / 100.0;
-    }
 }

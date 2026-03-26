@@ -334,10 +334,6 @@ CREATE TABLE employee_cycle_stats (
     total_rating        INTEGER         NOT NULL DEFAULT 0,
     review_count        INTEGER         NOT NULL DEFAULT 0,
 
-    goals_completed     INTEGER         NOT NULL DEFAULT 0,
-    goals_missed        INTEGER         NOT NULL DEFAULT 0,
-    goals_pending       INTEGER         NOT NULL DEFAULT 0,
-
     last_updated        TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
 
     -- Composite primary key — one stats row per (employee, cycle) pair
@@ -358,14 +354,7 @@ CREATE TABLE employee_cycle_stats (
         CHECK (avg_rating BETWEEN 0.00 AND 5.00),
 
     CONSTRAINT chk_ecs_review_count_non_negative
-        CHECK (review_count >= 0),
-
-    CONSTRAINT chk_ecs_goals_non_negative
-        CHECK (
-            goals_completed >= 0
-            AND goals_missed >= 0
-            AND goals_pending >= 0
-        )
+        CHECK (review_count >= 0)
 );
 
 -- WHY this index?
@@ -413,10 +402,6 @@ CREATE TRIGGER trg_employees_updated_at
 
 CREATE TRIGGER trg_performance_reviews_updated_at
     BEFORE UPDATE ON performance_reviews
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER trg_goals_updated_at
-    BEFORE UPDATE ON goals
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 

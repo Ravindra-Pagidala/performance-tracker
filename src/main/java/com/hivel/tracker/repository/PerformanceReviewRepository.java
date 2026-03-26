@@ -43,13 +43,6 @@ public interface PerformanceReviewRepository extends JpaRepository<PerformanceRe
     long countByCycleIdCustom(@Param("cycleId") UUID cycleId);
 
     @Query("""
-        SELECT AVG(pr.rating)
-        FROM PerformanceReview pr
-        WHERE pr.employee.id = :employeeId
-    """)
-    Double findAverageRatingForEmployee(@Param("employeeId") UUID employeeId);
-
-    @Query("""
         SELECT pr
         FROM PerformanceReview pr
         JOIN FETCH pr.cycle c
