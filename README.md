@@ -359,4 +359,4 @@ docker compose up --build
 - Employees are never hard-deleted — `is_active = false` is used for terminations
 - Goal status flows only forward: PENDING → COMPLETED or MISSED (no validation prevents backward transitions but the business logic assumes forward-only)
 - Review cycles have no "close" endpoint in this implementation — status is managed directly in the DB for this scope
-- The `GET /employees?department&minRating` filter operates across all cycles, not a specific cycle, as the assignment did not specify cycle scoping
+- The `GET /employees?department&minRating` filter operates across all cycles, not a specific cycle.
