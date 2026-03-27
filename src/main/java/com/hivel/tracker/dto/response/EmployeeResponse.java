@@ -1,5 +1,6 @@
 package com.hivel.tracker.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +21,7 @@ public class EmployeeResponse {
     private String department;
     private String role;
     private LocalDate joiningDate;
+    @JsonProperty("isActive")
     private boolean isActive;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
